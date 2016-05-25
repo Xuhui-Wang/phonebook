@@ -1,5 +1,3 @@
-package ucsd.w2.hw3;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,10 +11,8 @@ public class PhoneBook {
 
     private FastScanner in = new FastScanner();
     // Keep list of all existing (i.e. not deleted yet) contacts.
-//    private List<Contact> contacts = new ArrayList<>();
-    Contact[] contacts;
-    public static int M;
-    public static long a, b, p;
+    //private List<Contact> contacts = new ArrayList<>();
+    private String[] phonebook = new String[10000000];
     public static void main(String[] args) {
         new PhoneBook().processQueries();
     }
@@ -35,19 +31,25 @@ public class PhoneBook {
     private void writeResponse(String response) {
         System.out.println(response);
     }
+    private void processQuery(Query query){
+		if(query.type.equals("add")){
+			phonebook[query.number]=query.name;
+		}else if (query.type.equals("del")){
+			phonebook[query.number]=null;
+		}else{
+			String response = "not found";
+			if(phonebook[query.number]!=null){
+				response = phonebook[query.number];
+			}
+			writeResponse(response);
+		}
+	}
 
-    private static int hashValue(int input) {
-        int out =  (int)(Math.abs((a * input + b) % p) % M);
-        return out;
-    }
-    private static int next(int n) {
-        if (n < M - 1 && n >= 0)
-            return (n + 1);
-        else
-            return 0;
-    }
-    private void processQuery(Query query) {
-        /*
+    
+	
+	
+	/*
+	private void processQuery(Query query) {
         if (query.type.equals("add")) {
             // if we already have contact with such number,
             // we should rewrite contact's name
@@ -75,63 +77,11 @@ public class PhoneBook {
                     break;
                 }
             writeResponse(response);
-        }   */ 
-        if (query.type.equals("add"))
-        {
-            int n = hashValue(query.number);
-            Contact cur = contacts[n];
-            while (cur != null)
-            {
-                if (cur.number == query.number)
-                {
-                    cur.name = query.name;
-                    return;              //overwrite the corresponding name
-                }
-                n = next(n);
-                cur = contacts[n];
-            }
-            contacts[n] = new Contact(query.name, query.number);
-        } else if (query.type.equals("del")) {
-            int n = hashValue(query.number);
-            Contact cur = contacts[n];
-            while (cur != null)
-            {
-                if (cur.number == query.number)
-                {
-                    contacts[n] = null;
-                    return;              //overwrite the corresponding name
-                }
-                n = next(n);
-                cur = contacts[n];
-            }
-        } else {
-            int n = hashValue(query.number);
-            Contact cur = contacts[n];
-            String response = "not found";
-            while (cur != null)
-            {
-                if (cur.number == query.number)
-                {
-                    response = cur.name;
-                    break;              //overwrite the corresponding name
-                }
-                n = next(n);
-                cur = contacts[n];
-            }
-            writeResponse(response);
         }
-            
     }
+    */
     public void processQueries() {
         int queryCount = in.nextInt();
-        M = 2 * queryCount;
-        contacts = new Contact[M];       // set the load factor to 0.5;
-        p = 10000019;
-//        p = (int)Math.pow(10.0, 7.0) + 1;
-//        while(!isPrime(p)) p++;
-        a = (long)(Math.random() * p) % p;
-        b = (long)(Math.random() * p) % p;
-//        System.out.println("a = " + a + " b = " + b + " p = " + p);
         for (int i = 0; i < queryCount; ++i)
             processQuery(readQuery());
     }
